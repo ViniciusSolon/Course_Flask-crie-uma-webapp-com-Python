@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 class Jogo:
     def __init__(self,nome, categoria,console):
@@ -6,20 +6,36 @@ class Jogo:
         self.categoria = categoria
         self.console = console
 
+jogo1 = Jogo('Testris','Puzzle','Atari')
+jogo2 = Jogo('God of War', 'Rack n Slash','PS2')
+jogo3 = Jogo('Mortal Kombat','luta','PS2')
+lista = [jogo1, jogo2, jogo3]
+
 app = Flask(__name__)
 
 
 
-@app.route('/inicio')
-def ola():
-    jogo1 = Jogo('Testris','Puzzle','Atari')
-    jogo2 = Jogo('God of War', 'Rack n Slash','PS2')
-    jogo3 = Jogo('Mortal Kombat','luta','PS2')
-    lista = [jogo1, jogo2, jogo3]
+@app.route('/')
+def index():
+
     #lista = ['Tetris', 'Skyrim', 'Crash']
     return render_template('lista.html', titulo='Jogos', jogos = lista)
 
-app.run(host='0.0.0.0', port=8080)
+@app.route('/novo')
+def novo():
+    return render_template('novo.html', titulo ="Novo jogo")
+#Pagina Intermediaria
+@app.route('/criar', methods=['POST',])
+def criar():
+    nome = request.form['nome']
+    categoria = request.form['categoria']
+    console = request.form['console']
+    jogo = Jogo(nome,categoria, console)
+    lista.append(jogo)
+    return render_template('lista.html',titulo='jogos', jogos=lista)
+
+
+app.run(debug=True,host='0.0.0.0', port=8080)
 
 """
 O Jinja2 é o motor de templates do Flask. Ele nos ajuda com diversos helpers enquanto projetamos nossos HTML de forma mais dinâmica.
